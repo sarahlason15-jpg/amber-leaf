@@ -396,6 +396,7 @@
             Die link ziet eruit als:
             https://assets.mailerlite.com/jsonp/ACCOUNT_ID/forms/FORM_ID/subscribe
           -->
+          <iframe name="ml-verzend" title="MailerLite" hidden style="display:none"></iframe>
           <form id="signup" novalidate>
             <h3>Proef als eerste</h3>
             <div class="veld">
@@ -455,13 +456,11 @@
       fout.style.display = "none";
 
       if (MAILERLITE_ACTION) {
-        try {
-          await fetch(MAILERLITE_ACTION, { method: "POST", body: new URLSearchParams(new FormData(form)), mode: "no-cors" });
-        } catch (err) {
-          fout.textContent = "Er ging iets mis. Probeer het later opnieuw.";
-          fout.style.display = "block";
-          return;
-        }
+        // Echt versturen naar MailerLite, net zoals hun eigen formulier (via een verborgen iframe)
+        form.action = MAILERLITE_ACTION;
+        form.method = "post";
+        form.target = "ml-verzend";
+        HTMLFormElement.prototype.submit.call(form);
       }
       box.classList.add("verstuurd");
     });
